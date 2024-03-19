@@ -6,13 +6,12 @@ use App\Models\User;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use JetBrains\PhpStorm\NoReturn;
 use Modules\Order\Models\Order;
 use Modules\Order\OrderReceived;
-use Modules\Payment\payBuddy;
+use Modules\Payment\PayBuddySdk;
+use Modules\Payment\PaymentProvider;
 use Modules\Product\Database\Factories\ProductFactory;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -28,7 +27,7 @@ class CheckoutControllerTest extends TestCase
         $products = ProductFactory::new()->count(2)->create(new Sequence(
             ['name' => 'very expensive air fryer', 'price_in_cents' => 10000, 'stock' => 10],
             ['name' => 'Macbook Pro m3', 'price_in_cents' => 50000, 'stock' => 10]));
-        $paymentToken = payBuddy::validToken();
+        $paymentToken = payBuddySdk::validToken();
         $response = $this->actingAs($user)->post(route('order::checkout', [
             'payment_token' => $paymentToken,
             'products' => [
@@ -56,7 +55,7 @@ class CheckoutControllerTest extends TestCase
         //payment
         $payment = $order->latestPayment;
         $this->assertEquals('paid', $payment->status);
-        $this->assertEquals('PayBuddy', $payment->payment_gateway);
+        $this->assertEquals(PaymentProvider::PayBuddy, $payment->payment_gateway);
         $this->assertEquals(36, strlen($payment->payment_id));
         $this->assertEquals(60000, $payment->total_in_cents);
         $this->assertTrue($payment->user->is($user));
@@ -66,7 +65,7 @@ class CheckoutControllerTest extends TestCase
     {
         $user = UserFactory::new()->create();
         $product = ProductFactory::new()->create();
-        $payment_token = PayBuddy::invalidToken();
+        $payment_token = PayBuddySdk::invalidToken();
         $response = $this->actingAs($user)->postJson(route('order::checkout', [
             'payment_token' => $payment_token,
             'products' => [

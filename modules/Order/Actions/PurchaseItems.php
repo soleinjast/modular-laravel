@@ -3,13 +3,11 @@
 namespace Modules\Order\Actions;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Events\Dispatcher;
-use Illuminate\Support\Facades\Mail;
 use Modules\Order\DTOs\OrderDto;
 use Modules\Order\DTOs\PendingPayment;
 use Modules\Order\Events\OrderFulFilled;
 use Modules\Order\Models\Order;
 use Modules\Payment\Actions\CreatePaymentForOrder;
-use Modules\Payment\PayBuddy;
 use Modules\Product\CartItemCollection;
 use Modules\Product\Warehouse\ProductStockManager;
 use Modules\User\UserDto;
@@ -37,7 +35,7 @@ class PurchaseItems
                 orderId: $order->id,
                 userId: $user->id,
                 totalInCents: $items->totalInCents(),
-                payBuddy: $pendingPayment->provider,
+                paymentGateway: $pendingPayment->paymentGateway,
                 paymentToken: $pendingPayment->paymentToken);
             return $order;
         });

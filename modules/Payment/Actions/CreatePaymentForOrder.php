@@ -2,10 +2,10 @@
 
 namespace Modules\Payment\Actions;
 
-use Modules\Order\Exceptions\PaymentFailedException;
-use Modules\Order\Models\Order;
+use Modules\Payment\Exceptions\PaymentFailedException;
 use Modules\Payment\Models\Payment;
-use Modules\Payment\PayBuddy;
+use Modules\Payment\PaymentDetails;
+use Modules\Payment\PaymentGateway;
 use RuntimeException;
 
 class CreatePaymentForOrder
@@ -14,24 +14,24 @@ class CreatePaymentForOrder
      * @param int $orderId
      * @param int $userId
      * @param int $totalInCents
-     * @param PayBuddy $payBuddy
+     * @param PaymentGateway $paymentGateway
      * @param string $paymentToken
      * @return Payment
      * @throws PaymentFailedException
      */
-    public function handle(int $orderId, int $userId, int $totalInCents,  PayBuddy $payBuddy, string $paymentToken): Payment
+    public function handle(int $orderId, int $userId, int $totalInCents,  PaymentGateway $paymentGateway, string $paymentToken): Payment
     {
-        try {
-            $charge = $payBuddy->charge(
-                $paymentToken, $totalInCents, "modularization");
-        }catch (RuntimeException $exception){
-            throw PaymentFailedException::dueToInvalidToken();
-        }
+        $charge = $paymentGateway->charge(
+            new PaymentDetails(
+                $paymentToken,
+                $totalInCents,
+                "modularization"));
+
         return Payment::query()->create([
             'total_in_cents' => $totalInCents,
             'status' => 'paid',
-            'payment_gateway' => 'PayBuddy',
-            'payment_id' => $charge['id'],
+            'payment_gateway' => $charge->paymentProvider,
+            'payment_id' => $charge->id,
             'user_id' => $userId,
             'order_id' => $orderId
         ]);
