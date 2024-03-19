@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Mail;
 use JetBrains\PhpStorm\NoReturn;
-use Modules\Order\Models\Order;
-use Modules\Order\OrderReceived;
+use Modules\Order\Checkout\OrderReceived;
+use Modules\Order\Order;
 use Modules\Payment\PayBuddySdk;
 use Modules\Payment\PaymentProvider;
-use Modules\Product\Database\Factories\ProductFactory;
+use Modules\Product\database\factories\ProductFactory;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

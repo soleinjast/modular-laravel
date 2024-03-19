@@ -168,7 +168,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        \Modules\Order\Providers\OrderServiceProvider::class,
+        \Modules\Order\infrastrutre\Providers\OrderServiceProvider::class,
         \Modules\Payment\Providers\PaymentServiceProvider::class,
         \Modules\Product\Providers\ProductServiceProvider::class,
         \Modules\Shipment\Providers\ShipmentServiceProvider::class
