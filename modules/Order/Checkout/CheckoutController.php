@@ -4,6 +4,7 @@ namespace Modules\Order\Checkout;
 
 use Illuminate\Validation\ValidationException;
 use Modules\Order\contracts\PendingPayment;
+use Modules\Order\Order;
 use Modules\Payment\Exceptions\PaymentFailedException;
 use Modules\Payment\PaymentGateway;
 use Modules\Product\Collections\CartItemCollection;
@@ -40,7 +41,7 @@ class CheckoutController
             ]);
         }
         return response()->json([
-            'order_url' => $order->url()
+            'order_url' => $order->url
         ], 201);
     }
 }

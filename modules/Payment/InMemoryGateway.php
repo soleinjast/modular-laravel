@@ -6,7 +6,6 @@ use Illuminate\Support\Str;
 
 class InMemoryGateway implements PaymentGateway
 {
-
     public function charge(PaymentDetails $paymentDetails): SuccessfulPayment
     {
         return new SuccessfulPayment(

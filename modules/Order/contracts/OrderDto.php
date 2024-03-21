@@ -10,14 +10,15 @@ readonly class OrderDto
         public int $id,
         public int $totalInCents,
         public string $localizedTotal,
-        public array $lines
+        public array $lines,
+        public string $url
     )
     {
     }
 
     public static function fromEloquentModel(Order $order): self
     {
-        return new self($order->id, $order->total_in_cents, $order->localizedTotal(), OrderLineDto::fromEloquentCollection($order->lines));
+        return new self($order->id, $order->total_in_cents, $order->localizedTotal(), OrderLineDto::fromEloquentCollection($order->lines), $order->url());
     }
 
 }

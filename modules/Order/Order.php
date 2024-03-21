@@ -68,7 +68,7 @@ class Order extends Model
             ]));
         }
 
-        $this->total_in_cents = $this->lines->sum(fn(OrderLine $orderLine) => $orderLine->product_price_in_cents);
+        $this->total_in_cents = $this->lines->sum(fn(OrderLine $orderLine) => $orderLine->product_price_in_cents * $orderLine->quantity);
     }
 
     /**

@@ -16,6 +16,7 @@ use Modules\Product\database\factories\ProductFactory;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
+
 class CheckoutControllerTest extends TestCase
 {
     use DatabaseMigrations;
@@ -31,8 +32,8 @@ class CheckoutControllerTest extends TestCase
         $response = $this->actingAs($user)->post(route('order::checkout', [
             'payment_token' => $paymentToken,
             'products' => [
-                ['id' => $products->first()->id, 'quantity' => 1],
-                ['id' => $products->last()->id, 'quantity' => 1]
+                ['id' => $products->first()->id, 'quantity' => 2],
+                ['id' => $products->last()->id, 'quantity' => 2]
             ]
         ]));
         $order = Order::query()->latest('id')->first();
@@ -41,23 +42,23 @@ class CheckoutControllerTest extends TestCase
             return $mail->hasTo($user->email);
         });
         $this->assertTrue($order->user->is($user));
-        $this->assertEquals(60000, $order->total_in_cents);
+        $this->assertEquals(120000, $order->total_in_cents);
         $this->assertEquals('paid', $order->status);
         $this->assertCount(2, $order->lines);
 
         foreach ($products as $product) {
             $orderLine = $order->lines->where('product_id', $product->id)->first();
             $this->assertEquals($product->price_in_cents, $orderLine->product_price_in_cents);
-            $this->assertEquals(1, $orderLine->quantity);
+            $this->assertEquals(2, $orderLine->quantity);
         }
         $products = $products->fresh();
-        $this->assertEquals(9, $products->first()->stock);
+        $this->assertEquals(8, $products->first()->stock);
         //payment
         $payment = $order->latestPayment;
         $this->assertEquals('paid', $payment->status);
         $this->assertEquals(PaymentProvider::PayBuddy, $payment->payment_gateway);
         $this->assertEquals(36, strlen($payment->payment_id));
-        $this->assertEquals(60000, $payment->total_in_cents);
+        $this->assertEquals(120000, $payment->total_in_cents);
         $this->assertTrue($payment->user->is($user));
     }
     #[NoReturn] #[Test]
