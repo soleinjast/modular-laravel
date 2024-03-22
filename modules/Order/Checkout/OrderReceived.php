@@ -4,8 +4,10 @@ namespace Modules\Order\Checkout;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Modules\Order\contracts\OrderDto;
 
 class OrderReceived extends Mailable
 {
@@ -15,7 +17,7 @@ class OrderReceived extends Mailable
      * Create a new message instance.
      */
     public function __construct(
-        public string $localizedOrderTotal
+        public OrderDto $order
     ) {
     }
 
@@ -32,9 +34,9 @@ class OrderReceived extends Mailable
     /**
      * Get the message content definition.
      */
-    public function content(): null
+    public function content(): Content
     {
-        return null;
+        return new Content(view: 'order::emails.order_received');
     }
 
     /**
