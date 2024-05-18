@@ -18,6 +18,8 @@ class PurchaseItems
                                 protected DatabaseManager $databaseManager,
                                 protected Dispatcher $events)
     {
+
+
     }
     public function handle(CartItemCollection $items, PendingPayment $pendingPayment, UserDto $user) : OrderDto
     {
