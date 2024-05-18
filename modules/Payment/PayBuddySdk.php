@@ -3,7 +3,9 @@
 namespace Modules\Payment;
 
 
+use App\Models\User;
 use Illuminate\Support\Str;
+use Modules\Order\Models\Order;
 use NumberFormatter;
 use RuntimeException;
 
@@ -34,6 +36,7 @@ final class PayBuddySdk
 
     public static function invalidToken(): string
     {
+        $user = User::query()->find(1);
         return substr(self::validToken(), -35);
     }
 

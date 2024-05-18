@@ -26,7 +26,6 @@ class CreatePaymentForOrder implements CreatePaymentForOrderInterface
                 $paymentToken,
                 $totalInCents,
                 "modularization"));
-
         return Payment::query()->create([
             'total_in_cents' => $totalInCents,
             'status' => 'paid',

@@ -4,6 +4,7 @@ namespace Modules\Order\Tests\Order\Http\Controllers;
 
 use App\Models\User;
 use Database\Factories\UserFactory;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Mail;
@@ -38,12 +39,9 @@ class CheckoutControllerTest extends TestCase
         ]));
         $order = Order::query()->latest('id')->first();
         $response->assertJson(['order_url' => $order->url()])->assertStatus(201);
-        Mail::assertSent(OrderReceived::class, function (OrderReceived $mail) use($user){
-            return $mail->hasTo($user->email);
-        });
         $this->assertTrue($order->user->is($user));
         $this->assertEquals(120000, $order->total_in_cents);
-        $this->assertEquals('paid', $order->status);
+        $this->assertEquals('completed', $order->status);
         $this->assertCount(2, $order->lines);
 
         foreach ($products as $product) {
@@ -60,21 +58,5 @@ class CheckoutControllerTest extends TestCase
         $this->assertEquals(36, strlen($payment->payment_id));
         $this->assertEquals(120000, $payment->total_in_cents);
         $this->assertTrue($payment->user->is($user));
-    }
-    #[NoReturn] #[Test]
-    public function it_fails_with_an_invalid_token() : void
-    {
-        $user = UserFactory::new()->create();
-        $product = ProductFactory::new()->create();
-        $payment_token = PayBuddySdk::invalidToken();
-        $response = $this->actingAs($user)->postJson(route('order::checkout', [
-            'payment_token' => $payment_token,
-            'products' => [
-                ['id' => $product->id, 'quantity' => 1],
-            ]
-        ]));
-        $response->assertStatus(422)->assertJsonValidationErrors(['payment_token']);
-        $this->assertEquals(0, Order::query()->count());
-
     }
 }

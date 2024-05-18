@@ -24,21 +24,12 @@ class PurchaseItems
         $order =  $this->databaseManager->transaction(function () use ($items, $user, $pendingPayment) {
                 $order = Order::startForUser($user->id);
                 $order->addLinesFromCartItems($items);
-                $order->fulfill();
-            $this->createPaymentForOrder->handle(
-                orderId: $order->id,
-                userId: $user->id,
-                totalInCents: $items->totalInCents(),
-                paymentGateway: $pendingPayment->paymentGateway,
-                paymentToken: $pendingPayment->paymentToken);
+                $order->start();
             return OrderDto::fromEloquentModel($order);
         });
-        $this->events->dispatch(
-            new OrderFulFilled(
-                order: $order,
-                user: $user
-            )
-        );
+
+        $this->events->dispatch(new OrderStarted(order: $order, user: $user, pendingPayment: $pendingPayment));
+
         return $order;
     }
 }

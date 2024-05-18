@@ -15,6 +15,8 @@ use NumberFormatter;
 class Order extends Model
 {
     use HasFactory;
+
+    const PAYMENT_FAILED = 'payment_failed';
     protected $fillable = ['user_id', 'total_in_cents', 'status'];
 
     public const PENDING = "pending";
@@ -74,13 +76,25 @@ class Order extends Model
     /**
      * @throws OrderMissingOrderLinesException
      */
-    public function fulfill(): void
+    public function start(): void
     {
         if($this->lines->isEmpty()){
             throw new OrderMissingOrderLinesException();
         }
-        $this->status = OrderEnums::PAID;
+        $this->status = OrderEnums::PENDING;
         $this->save();
         $this->lines()->saveMany($this->lines);
+    }
+
+    public function markedAsFail(): void
+    {
+        $this->status = self::PAYMENT_FAILED;
+        $this->save();
+    }
+
+    public function complete(): void
+    {
+        $this->status = self::COMPLETED;
+        $this->save();
     }
 }
