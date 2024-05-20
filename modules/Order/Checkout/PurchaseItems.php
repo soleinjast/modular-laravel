@@ -23,9 +23,8 @@ class PurchaseItems
     }
     public function handle(CartItemCollection $items, PendingPayment $pendingPayment, UserDto $user) : OrderDto
     {
-
-
-        $order =  $this->databaseManager->transaction(function () use ($items, $user, $pendingPayment) {
+        $order =  $this->
+        databaseManager->transaction(function () use ($items, $user, $pendingPayment) {
                 $order = Order::startForUser($user->id);
                 $order->addLinesFromCartItems($items);
                 $order->start();
