@@ -20,10 +20,13 @@ class CartItemCollection
     public static function fromCheckOutData($data): CartItemCollection
     {
         $cartItems = collect($data->input('products'))->map(function (array $productDetails) {
-            return new CartItem(ProductDto::fromEloquentModel(Product::query()->find($productDetails['id'])),
+            return new CartItem(ProductDto::
+            fromEloquentModel(Product::query()
+                ->find($productDetails['id'])),
                 $productDetails['quantity']);
         });
         return new self($cartItems);
+
     }
 
     public function totalInCents()
