@@ -19,6 +19,8 @@ class OrderReceived extends Mailable
      */
     public function __construct(
         public OrderDto $order
+
+        
     ) {
     }
 
