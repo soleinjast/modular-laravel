@@ -24,7 +24,8 @@ class CheckoutController
     public function __invoke(CheckoutRequest $request): \Illuminate\Http\JsonResponse
     {
         //providing data
-        $cartItems = CartItemCollection::fromCheckOutData($request);
+        $cartItems = CartItemCollection::
+        fromCheckOutData($request);
         $pendingPayment = new PendingPayment($this->paymentGateway, $request->input('payment_token'));
         $userDto = UserDto::fromEloquentModel($request->user());
         // send it to inner layer for business rules
