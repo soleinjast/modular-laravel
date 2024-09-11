@@ -30,7 +30,8 @@ class CheckoutController
         $userDto = UserDto::fromEloquentModel($request->user());
         // send it to inner layer for business rules
         try {
-            $order = $this->purchaseItems
+            $order =
+                $this->purchaseItems
                 ->handle(
                     $cartItems,
                     $pendingPayment,
